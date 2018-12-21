@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<title>按A-Z排序通讯录（中文、英文、特殊字符）</title>
+<link rel="stylesheet" href="https://unpkg.com/mint-ui/lib/style.css">
+<!-- 先引入 Vue -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/mint-ui/lib/index.js"></script>
+</head>
+<body>
+  <div id="app">
+      <mt-index-list>
+          <mt-index-section v-for="(item, index) in pySegSort.segs" :key="index"  :index="item.initial">
+            <mt-cell v-for="(s, index) in item.data" :key="index" :title="s.cityName"></mt-cell>
+          </mt-index-section>
+        </mt-index-list>
+    </div>
+    <script>
+        new Vue({
+          el: '#app',
+          data(){
+            return{
+              arr:[
+                  { id: "v1", cityName: "阿里a" },
+                  { id: "v2", cityName: "试试s" },
+                  { id: "v3", cityName: "传参" },
+                  { id: "v4", cityName: "版本" },
+                  { id: "v5", cityName: "天津t" },
+                  { id: "v6", cityName: "安徽a" },
+                  { id: "v7", cityName: "阿道夫a" },
+                  { id: "v8", cityName: "匹配p" },
+                  { id: "v9", cityName: "海南h" },
+                  { id: "v10", cityName: "请求q" },
+                  { id: "v11", cityName: "问我" },
+                  { id: "v12", cityName: "恩恩" },
+                  { id: "v13", cityName: "让人" },
+                  { id: "v14", cityName: "英语" },
+                  { id: "v15", cityName: "已寄" },
+                  { id: "v16", cityName: "公共" },
+                  { id: "v17", cityName: "张家口z" },
+                  { id: "v17", cityName: "A张家口z" },
+                  { id: "v17", cityName: "CC张家口z" },
+                  { id: "v17", cityName: "D张家口z" },
+                  { id: "v17", cityName: "d张家口z" },
+                  { id: "v17", cityName: "d张家口z" },
+                  { id: "v17", cityName: "!张家口z" },
+                  { id: "v17", cityName: "-张家口z" },
+                  { id: "v17", cityName: "0张家口z" },
+                  { id: "v17", cityName: "=张家口z" },
+                  { id: "v17", cityName: "padsjfo" },
+                  { id: "v17", cityName: "放学" },
+                ],
+            }
+          },
+          computed:{
+            pySegSort(){
+              if(this.arr.length == 0) return;
+              if (!String.prototype.localeCompare) return null;
+              var letters = "*ABCDEFGHJKLMNOPQRSTWXYZ".split("");
+              var zh = "阿八嚓哒妸发旮哈讥咔垃痳拏噢妑七呥扨它穵夕丫帀".split("");
+              var segs = []; // 存放数据
+              var res = {};
+              let curr;
+              var re = /[^\u4e00-\u9fa5]/;//中文正则
+              var pattern = new RegExp("[`\\-~!@#$^&*()=|{}':;',\\[\\].<>《》/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？]"); //特殊符号
+
+              letters.filter((items, i) => {
+                curr = {
+                    initial: '', //字母
+                    data: [] ,  //数据
+                  };
+                this.arr.map((v, index) => {
+                  // 特殊字符
+                  if (pattern.test(v.cityName[0])) {
+                    if ((!zh[i - 1] || zh[i - 1].localeCompare(v.cityName) <= 0) && v.cityName.localeCompare(zh[i]) == -1) {
+                      curr.data.push(v);
+                    }
+                  }
+                  // 判断首个字是否是中文 
+                  if (re.test(v.cityName[0])) {
+                    // 英文 
+                    if (v.cityName[0].toUpperCase() == items) {
+                      curr.data.push(v);
+                    }
+                  } else {
+                    // 中文
+                    if ((!zh[i - 1] || zh[i - 1].localeCompare(v.cityName) <= 0) && v.cityName.localeCompare(zh[i]) == -1) {
+                      curr.data.push(v);
+                    }
+                  }
+                  if ( curr.data.length) {
+                    curr.initial = letters[i]
+                    segs.push(curr);
+                    curr.data.sort((a, b) => {
+                      return a.cityName.localeCompare(b.cityName);
+                    });             
+                  }
+
+                })
+              })
+              res.segs = Array.from(new Set(segs)) //去重
+              console.log(res);
+              return res;
+            }
+          },
+        })
+      </script>
+</body>
+</html>
